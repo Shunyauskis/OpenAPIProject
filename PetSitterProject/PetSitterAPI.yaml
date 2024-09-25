@@ -2,7 +2,57 @@ openapi: 3.0.3
 info:
   title: PetSitter API
   version: "0.1"
-paths: {}
+paths:
+  /users:
+    post:
+      summary: Register User
+      responses:
+        '201':
+          description: Created
+          headers:
+            location:
+              schema:
+                type: string
+            requestBody:
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/User'
+  /users/{id}:
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+    get:
+      summary: View User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Modify User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+    delete:
+      summary: Delete User
+      responses:
+        '204':
+          description: No Content
 components:
   schemas:
     User:
