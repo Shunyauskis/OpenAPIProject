@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: USB API Clone
+  version: "0.1"
+paths:
+  /document:
+    post:
+      summary: Create new UAH document
+      description: |-
+        # Required headers
+        
+        - Authorization : Bearer JWT token obtained during authorization process
+        - Sign : String for concatenating data for signature documentNumber|amount|recipientIBAN|payerIBAN
+          Amount format: #0.00
+        - X-Request-ID : UUID, unique identifier of request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: document created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                  message:
+                    type: string
+                    example: "Payment succesfully created"
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type: string
+                    example: "Invalid request"
+                  validationErrors:
+                    type: object
+                    example:
+                    - message: Recipient passport number not valid
+                      codeNumber: 28
+                      fieldKey: Targed field key. Optional
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorMessage:
+                    type: string
+                    example: "Failure description"
+components:
+  schemas:
+    PaymentRequest:
+      type: object
+      properties:
+        documentNumber:
+          type: string
+          description: Number of document. Optional
+        recipientIdCode:
+          type: string
+          description: INN or EDRPO of the recipient. Use 0000000000 if no code.
+          example: "03119055"
+        documentDate:
+          type: string
+          format: date
+          description: Date of document. Optional
+        amount:
+          type: number
+          description: Amount in UAH. e.g., 22.02
+          example: 856.35
+        payerIBAN:
+          type: string
+          description: IBAN of account to pay from.
+          example: "UA583510050000026202011074219"
+        recipientIBAN:
+          type: string
+          description: IBAN of account to pay to.
+          example: "UA043510050000029328155845100"
+        recipientName:
+          type: string
+          description: Name of the recipient.
+          example: "ТОВ Тестова Компанія"
+        paymentPurpose:
+          type: string
+          description: Payment purpose. Optional
+          example: "Тестовий платіж. Без ПДВ"
+        passportSeries:
+          type: string
+          description: Passport series of the recipient. Optional. Mandatory if recipient code is 0000000000.
+        passportNumber:
+          type: string
+          description: Passport number of the recipient. Optional. Mandatory if recipient code is 0000000000.
+        recipientCountryCode:
+          type: string
+          description: Latin letters country code of nonresident recipient.
+        valueDate:
+          type: string
+          format: date
+          description: Desired value date. Optional
+        recordNumber:
+          type: integer
+          description: Number of record in request batch.
+      required:
+        - recipientIdCode
+        - amount
+        - payerIBAN
+        - recipientIBAN
+        - recipientName
+      example:
+        amount: 856.35
+        documentDate: 1593723600000
+        documentNumber: "MY1234"
+        payerIBAN: "UA583510050000026202011074219"
+        paymentPurpose: "Тестовий платіж. Без ПДВ"
+        recipientIBAN: "UA043510050000029328155845100"
+        recipientIdCode: "03119055"
+        recipientName: "ТОВ Тестова Компанія"
+        valueDate: "1593767292081"
